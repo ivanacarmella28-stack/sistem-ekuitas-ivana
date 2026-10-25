@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f2">
+  <title>PressLedger | Akuntansi Ekuitas Percetakan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="#ringkasan"><span class="brand-mark">P</span><span><strong>PressLedger</strong><small>AKUNTANSI PERCETAKAN</small></span></a>
+      <p class="nav-caption">RUANG KERJA</p>
+      <nav class="navigation" aria-label="Navigasi utama">
+        <a class="nav-link active" href="#ringkasan" data-nav="ringkasan"><span>⌂</span>Ringkasan</a>
+        <a class="nav-link" href="#transaksi" data-nav="transaksi"><span>↗</span>Transaksi modal</a>
+        <a class="nav-link" href="#pemilik" data-nav="pemilik"><span>♙</span>Data pemilik</a>
+        <a class="nav-link" href="#laporan" data-nav="laporan"><span>▤</span>Laporan ekuitas</a>
+      </nav>
+      <div class="sidebar-note"><span class="connection-dot" id="connection-dot"></span><div><small>Status sistem</small><strong id="connection-status">Menyiapkan data...</strong></div></div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">P</span><strong>PressLedger</strong></div>
+        <span class="today-label" id="today-label"></span>
+        <button class="button button-primary" data-open-modal="transaction-modal"><span>＋</span> Catat transaksi</button>
+      </header>
+
+      <section class="page-section" id="ringkasan">
+        <div class="page-heading"><div><p class="eyebrow">PERUSAHAAN PERCETAKAN</p><h1>Ringkasan ekuitas</h1><p class="muted">Pantau modal pemilik dan perubahan ekuitas usaha Anda.</p></div></div>
+        <div class="summary-grid">
+          <article class="summary-card featured"><div class="summary-label">Modal akhir <span class="metric-icon">◒</span></div><strong id="stat-equity">Rp 0</strong><small id="equity-caption">Posisi ekuitas saat ini</small></article>
+          <article class="summary-card"><div class="summary-label">Setoran modal <span class="metric-icon green">↗</span></div><strong id="stat-deposit">Rp 0</strong><small>Akumulasi setoran pemilik</small></article>
+          <article class="summary-card"><div class="summary-label">Prive pemilik <span class="metric-icon orange">↘</span></div><strong id="stat-withdrawal">Rp 0</strong><small>Akumulasi pengambilan pribadi</small></article>
+          <article class="summary-card"><div class="summary-label">Laba / (rugi) <span class="metric-icon blue">≈</span></div><strong id="stat-profit">Rp 0</strong><small>Akumulasi hasil usaha</small></article>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">STRUKTUR KEPEMILIKAN</p><h2>Modal per pemilik</h2></div><a class="text-link" href="#pemilik">Kelola →</a></div>
+            <div id="owner-summary" class="owner-summary"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">JURNAL TERBARU</p><h2>Mutasi modal terakhir</h2></div><a class="text-link" href="#transaksi">Lihat jurnal →</a></div>
+            <div id="recent-transactions" class="recent-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page-section" id="transaksi">
+        <div class="page-heading"><div><p class="eyebrow">BUKU BESAR EKUITAS</p><h1>Transaksi modal</h1><p class="muted">Jurnal setoran, prive, serta laba dan rugi perusahaan.</p></div><button class="button button-primary" data-open-modal="transaction-modal"><span>＋</span> Transaksi baru</button></div>
+        <section class="panel table-panel">
+          <div class="filters"><label class="search-field"><span>⌕</span><input id="transaction-search" type="search" placeholder="Cari keterangan atau bukti..."></label><select id="transaction-type-filter" aria-label="Filter jenis"><option value="">Semua jenis</option><option value="setoran">Setoran</option><option value="prive">Prive</option><option value="laba">Laba</option><option value="rugi">Rugi</option></select><input id="transaction-month-filter" type="month" aria-label="Filter bulan"></div>
+          <div class="table-wrap"><table><thead><tr><th>TANGGAL</th><th>PEMILIK</th><th>JENIS</th><th>KETERANGAN / BUKTI</th><th class="align-right">JUMLAH</th><th><span class="visually-hidden">Aksi</span></th></tr></thead><tbody id="transaction-rows"></tbody></table><div class="empty-state hidden" id="empty-transactions">Tidak ada transaksi yang cocok dengan filter.</div></div>
+        </section>
+      </section>
+
+      <section class="page-section" id="pemilik">
+        <div class="page-heading"><div><p class="eyebrow">MASTER DATA</p><h1>Data pemilik</h1><p class="muted">Kelola pemilik yang menanamkan modal pada perusahaan percetakan.</p></div><button class="button button-primary" data-open-modal="owner-modal"><span>＋</span> Tambah pemilik</button></div>
+        <div id="owners-grid" class="owners-grid"></div>
+      </section>
+
+      <section class="page-section report-section" id="laporan">
+        <div class="page-heading"><div><p class="eyebrow">PELAPORAN KEUANGAN</p><h1>Laporan perubahan ekuitas</h1><p class="muted">Susun perubahan modal berdasarkan periode akuntansi.</p></div><button class="button button-primary" data-open-modal="period-modal"><span>＋</span> Buat periode</button></div>
+        <div class="report-layout"><section class="panel report-list-panel"><div class="panel-heading"><div><p class="eyebrow">PERIODE</p><h2>Daftar laporan</h2></div></div><div id="period-list" class="period-list"></div></section><section class="panel report-detail" id="report-detail"><div class="report-placeholder"><span>▤</span><strong>Pilih periode laporan</strong><small>Rincian perubahan ekuitas akan ditampilkan di sini.</small></div></section></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="modal" id="transaction-modal"><form id="transaction-form">
+    <div class="modal-heading"><div><p class="eyebrow">JURNAL EKUITAS</p><h2>Catat transaksi modal</h2></div><button class="close-button" type="button" data-close-modal aria-label="Tutup">×</button></div>
+    <div class="form-grid"><label>Tanggal<input type="date" name="tanggal" required></label><label>Jenis transaksi<select name="jenis" id="transaction-type" required><option value="setoran">Setoran modal</option><option value="prive">Prive pemilik</option><option value="laba">Laba periode</option><option value="rugi">Rugi periode</option></select></label><label id="owner-field">Pemilik<select name="pemilik_id" id="transaction-owner"></select></label><label>Jumlah (Rp)<input type="number" name="jumlah" min="1000" step="1000" placeholder="0" required></label><label class="full-width">Keterangan<input name="keterangan" maxlength="240" placeholder="Contoh: Setoran modal untuk mesin cetak"></label><label class="full-width">Nomor bukti <span class="optional">Opsional</span><input name="no_bukti" maxlength="60" placeholder="Contoh: BM-2026-001"></label></div>
+    <p class="form-error hidden" id="transaction-error" role="alert"></p><div class="modal-actions"><button class="button button-secondary" type="button" data-close-modal>Batal</button><button class="button button-primary" type="submit">Simpan transaksi</button></div>
+  </form></dialog>
+
+  <dialog class="modal compact-modal" id="owner-modal"><form id="owner-form"><div class="modal-heading"><div><p class="eyebrow">MASTER DATA</p><h2>Tambah pemilik</h2></div><button class="close-button" type="button" data-close-modal aria-label="Tutup">×</button></div><label class="standalone-label">Nama pemilik<input name="nama" minlength="2" maxlength="120" placeholder="Nama lengkap pemilik" required></label><p class="form-error hidden" id="owner-error" role="alert"></p><div class="modal-actions"><button class="button button-secondary" type="button" data-close-modal>Batal</button><button class="button button-primary" type="submit">Simpan pemilik</button></div></form></dialog>
+
+  <dialog class="modal compact-modal" id="period-modal"><form id="period-form"><div class="modal-heading"><div><p class="eyebrow">PELAPORAN KEUANGAN</p><h2>Buat periode laporan</h2></div><button class="close-button" type="button" data-close-modal aria-label="Tutup">×</button></div><label class="standalone-label">Periode laporan<input type="month" name="periode" required></label><label class="standalone-label">Modal awal (Rp)<input type="number" name="modal_awal" min="0" step="1000" value="0" required></label><p class="form-error hidden" id="period-error" role="alert"></p><div class="modal-actions"><button class="button button-secondary" type="button" data-close-modal>Batal</button><button class="button button-primary" type="submit">Buat laporan</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
